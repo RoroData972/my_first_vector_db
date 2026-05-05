@@ -1,2 +1,6 @@
-sentence-transformers
-chromadb
+sentence_transformers
+numpy
+faiss
+pandas
+groq
+dotenv
