@@ -17,7 +17,7 @@ def get_embeddings(sentence_transformer_object, chuncks):
 	return embeddings
 
 
-def retrieve(question, collection, n=3):
+def retrieve(question, sentence_transformer_object, collection, n=3):
 	embedded_question = get_embeddings(sentence_transformer_object, [question])[0]
 
 	results = collection.query(query_embeddings=[embedded_question], n_results=n)
@@ -135,7 +135,7 @@ if __name__ == "__main__":
 		metadatas=[{"source": "doc1.pdf"} for _ in range(len(chuncks))]
 		)
 
-	print(retrieve("Quelle est la couleur du chat de Bob ?", collection))
+	print(retrieve("Quelle est la couleur du chat de Bob ?", sentence_transformer_object, collection))
 
 
 
