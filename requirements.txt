@@ -1,6 +1,8 @@
 sentence_transformers
-numpy
-faiss
+numpy<2
+faiss-cpu
 pandas
 groq
-dotenv
+python-dotenv
+streamlit
+torchvision
