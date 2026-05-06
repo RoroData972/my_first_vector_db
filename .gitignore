@@ -222,4 +222,4 @@ faiss_index.index
 faiss_index.json
 
 # macOS
-.DS_Store
+.DS_StoreData/
