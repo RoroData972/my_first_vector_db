@@ -1,13 +1,16 @@
 from groq import Groq
 from dotenv import load_dotenv
 import os
+load_dotenv()
+
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 import json
 #import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-load_dotenv()
+
 
 
 ## charger index FAIS
@@ -139,11 +142,6 @@ def build_context(question, results):
 
 #  puis la réponse généré
 def answer_question(question):
-    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-
-    model_embed = SentenceTransformer("distiluse-base-multilingual-cased-v2")
-    
-    embeddings, documents = load_index()
 
     results = retrieve(question, model_embed, embeddings, documents, k=10)
 
@@ -207,6 +205,14 @@ def answer_question(question):
 #     #question = "Comment s'appelle le champignon de mon gnome ?" 
 #     response = answer_question(question)
 #     print(response)
+
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+model_embed = SentenceTransformer(
+    "distiluse-base-multilingual-cased-v2"
+)
+
+embeddings, documents = load_index()
 
 if __name__ == "__main__":
     print("🎬 RAG films prêt ! Tape 'quit' pour quitter.\n")

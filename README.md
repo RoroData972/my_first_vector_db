@@ -1,150 +1,159 @@
 # my_first_vector_db
 
-## Installation
+## Auteur
 
-Pour ceux qui n'ont pas de GPU Nvidia :
+Rodrigue
 
-pip install -r requirements.txt --break-system-packages
+---
 
-## Rodrigue
+# Description
 
-## Description du projet 
-
-Ce projet implémente un système de recommandation de films basé sur une approche **RAG (Retrieval-Augmented Generation)**.
+Ce projet implémente un système de recommandation de films basé sur une approche RAG (Retrieval-Augmented Generation).
 
 Le système :
+
 - transforme les films en embeddings avec SentenceTransformer
-- effectue une recherche vectorielle (FAISS)
-- génère une réponse à l’aide d’un LLM (Groq)
+- effectue une recherche vectorielle
+- génère une réponse avec Groq
 
 ---
 
-## Difficultés rencontrées
+# Installation
 
-### Problème avec FAISS (segmentation fault)
+## Cloner le projet
 
-Lors de l'utilisation de FAISS pour la recherche vectorielle (`index.search`), une erreur de type **segmentation fault** s'est produite sur macOS (Apple Silicon).
-
-Causes :
-- incompatibilité entre FAISS et certaines architectures ARM
-- incompatibilité avec NumPy 2.x
-
----
-
-### Problème de compatibilité NumPy
-
-Une erreur indiquait que FAISS n’était pas compatible avec NumPy 2.x.
+```bash
+git clone https://github.com/RoroData972/my_first_vector_db.git
+cd my_first_vector_db
+```
 
 ---
 
-### Contournement du bug FAISS
+## Créer un environnement virtuel
 
-FAISS a été conservé pour la phase d’indexation (création de la base vectorielle).
-
-Cependant, la fonction `index.search` provoquant des crashs, une solution alternative a été mise en place :
-
-- récupération des embeddings
-- calcul manuel de similarité (produit scalaire avec numpy)
-- tri des résultats pour obtenir les top-k
-
-Avantages :
-- respect du TP (utilisation de FAISS)
-- stabilité sur macOS
-
----
-### Problème de taille du dataset (limitation à 500 films)
-
-Au début du projet, le dataset était limité à 500 films afin d'accélérer les tests :
-
-```python
-
-documents = documents[:500]
-Cependant, cela a entraîné plusieurs problèmes :
-
-* faible diversité des résultats
-* très peu de films français disponibles
-* recommandations peu pertinentes
-* impression que le filtre de langue ne fonctionnait pas
-
-Après analyse, il s’est avéré que le problème ne venait pas du code mais du manque de données.
-
-Solution :
-
-* suppression de la limitation
-* utilisation de l’ensemble du dataset (~4800 films)
-
-Cela a permis :
-
-* d’augmenter la diversité des résultats
-* d’améliorer la pertinence des recommandations
-* de valider correctement le filtre par langue
-
-
-### Problème de modèle Groq
-
-Le modèle initial (`llama3-8b-8192`) était déprécié.
-
-Solution :
-- utilisation du modèle `llama-3.3-70b-versatile`
+```bash
+python -m venv venv
+```
 
 ---
 
-### Évolution du prompt (suppression de context.txt)
+## Activation
 
-Au début du projet, un fichier `context.txt` était utilisé pour construire le prompt envoyé au modèle.
+### macOS / Linux
 
-Cependant, cette approche a été abandonnée au profit d’un prompt directement intégré dans le code (`system_prompt`), car :
+```bash
+source venv/bin/activate
+```
 
-- elle offre un meilleur contrôle sur le comportement du modèle
-- elle est plus adaptée au cas d’usage (recommandation de films)
-- elle simplifie l’architecture du projet
+### Windows
 
-Le fichier `context.txt` a donc été supprimé dans la version finale.
-
----
-
-## Solutions apportées
-
-### Correction NumPy
-
-pip install "numpy<2"
+```bash
+venv\Scripts\activate
+```
 
 ---
 
-## Résultat
+## Installer les dépendances
 
-* Q1 → “j’ai structuré les données en texte avec titre, genres, résumé”
-* Q2 → “json.loads pour parser les genres”
-* Q3 → “sauvegarde FAISS pour éviter recalcul”
-* Q4 → “prompt contrôlé pour éviter hallucination”
-* Q5 → “réponse ‘Je ne sais pas’”
+### Linux / macOS
 
-Le système permet :
+```bash
+pip install -r requirements.txt --break-system-packages
+```
 
-- de recommander des films à partir d’une requête utilisateur
-- de générer des réponses pertinentes basées sur le contexte
-- d’éviter les hallucinations grâce à la contrainte "Je ne sais pas"
+### Windows
+
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
-## Exemple
+# Configuration
 
-Requête :
+Créer un fichier `.env` à la racine du projet :
 
-film similaire à Inception
+```env
+GROQ_API_KEY=votre_cle_api
+```
 
-Réponse :
+---
 
-- recommandations de films similaires
-- description, genres et notes
-
-## Dataset
+# Dataset
 
 Le dataset n’est pas inclus dans le repository.
 
-Pour exécuter le projet, placer le fichier CSV dans le dossier `Data/`.
+Placer le fichier CSV dans le dossier :
 
-Exemple :
-
+```text
 Data/movies.csv
+```
 
+---
+
+# Génération de la base vectorielle
+
+Avant d’utiliser le RAG, générer les embeddings :
+
+```bash
+python vector_db.py
+```
+
+Cette étape crée :
+
+- les embeddings
+- l’index vectoriel
+- les fichiers FAISS
+
+---
+
+# Lancement du projet
+
+```bash
+python rag.py
+```
+
+---
+
+# Utilisation
+
+Une fois le programme lancé :
+
+```text
+🎬 RAG films prêt ! Tape 'quit' pour quitter.
+```
+
+## Exemples de questions
+
+- films similaires à Inception
+- films fantastiques
+
+## Pour quitter
+
+```text
+quit
+```
+
+ou
+
+```text
+exit
+```
+
+---
+
+# Dépendances principales
+
+- sentence-transformers
+- groq
+- numpy
+- python-dotenv
+- faiss-cpu
+
+---
+
+# Remarques
+
+- Le projet a été développé sur macOS Apple Silicon.
+- Une alternative à `index.search()` a été utilisée à cause de problèmes de compatibilité FAISS sur Mac ARM.
+- Les embeddings et ressources sont chargés une seule fois au démarrage afin d’optimiser les performances.
