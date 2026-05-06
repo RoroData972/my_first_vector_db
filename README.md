@@ -6,6 +6,17 @@ Rodrigue
 
 ---
 
+# Nouveautés V2
+
+
+- ajout d’une interface web avec Streamlit
+- ajout des acteurs et réalisateurs dans les embeddings
+- amélioration de la recherche sémantique
+- fusion des datasets films + crédits
+- optimisation du chargement des ressources
+
+---
+
 # Description
 
 Ce projet implémente un système de recommandation de films basé sur une approche RAG (Retrieval-Augmented Generation).
@@ -86,7 +97,8 @@ Le dataset n’est pas inclus dans le repository.
 Placer le fichier CSV dans le dossier :
 
 ```text
-Data/movies.csv
+Data/tmdb_5000_movies.csv
+Data/tmdb_5000_credits.csv
 ```
 
 ---
@@ -109,6 +121,14 @@ Cette étape crée :
 
 # Lancement du projet
 
+## Interface web Streamlit
+
+```bash
+python -m streamlit run app.py
+```
+
+## Version console
+
 ```bash
 python rag.py
 ```
@@ -127,6 +147,9 @@ Une fois le programme lancé :
 
 - films similaires à Inception
 - films fantastiques
+### Exemples supplementaire V2
+- films avec Leonardo DiCaprio
+- films réalisés par Christopher Nolan
 
 ## Pour quitter
 
