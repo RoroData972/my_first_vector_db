@@ -4,7 +4,14 @@ import numpy as np
 import json
 import pandas as pd
 
+
 df = pd.read_csv("data/tmdb_5000_movies.csv")
+df_credits = pd.read_csv("Data/tmdb_5000_credits.csv")
+df = df.merge(
+    df_credits,
+    left_on="id",
+    right_on="movie_id"
+)
 
 print(df.columns)
 
@@ -45,26 +52,57 @@ if __name__ == "__main__":
             return ""
 
     documents = []
+def extract_actors(cast_json):
+    try:
+        cast = json.loads(cast_json)
 
-    for i, row in df.iterrows():
-        genres = parse_genres(row["genres"])
+        actors = [actor["name"] for actor in cast[:5]]
 
-        texte = f"""
-        Titre: {row['title']}
-        Genres: {genres}
-        Date: {row['release_date']}
-        Note: {row['vote_average']}
-        Résumé: {row['overview']}
-        """
+        return ", ".join(actors)
 
-        documents.append({
-            "contenu": texte,
-            "metadata": {
-                "titre": row["title"],
-                "note": row["vote_average"],
-                "langue": row["original_language"]
-            }
-        })
+    except:
+        return ""
+
+
+def extract_director(crew_json):
+    try:
+        crew = json.loads(crew_json)
+
+        for person in crew:
+            if person["job"] == "Director":
+                return person["name"]
+
+        return ""
+
+    except:
+        return ""
+
+
+for i, row in df.iterrows():
+    genres = parse_genres(row["genres"])
+
+    actors = extract_actors(row["cast"])
+
+    director = extract_director(row["crew"])
+
+    texte = f"""
+    Titre: {row['title_x']}
+    Genres: {genres}
+    Réalisateur: {director}
+    Acteurs: {actors}
+    Date: {row['release_date']}
+    Note: {row['vote_average']}
+    Résumé: {row['overview']}
+    """
+
+    documents.append({
+        "contenu": texte,
+        "metadata": {
+            "titre": row["title_x"],
+            "note": row["vote_average"],
+            "langue": row["original_language"]
+        }
+    })
 
     # Pour accélérer les tests, limiter le nombre de films (ex: 500)
 		#documents = documents[:500]
